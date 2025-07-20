@@ -6,7 +6,8 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
 
 from sqlalchemy.orm import Session
-from . import crud, models, schemas, config
+# MUDANÇA 1: Importar 'database' diretamente para obter o get_db
+from . import models, schemas, config, database
 
 # Configuração
 settings = config.settings
@@ -35,7 +36,13 @@ def create_access_token(data: dict):
 
 # --- Dependências de Segurança ---
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(crud.get_db)):
+def get_current_user(
+    token: str = Depends(oauth2_scheme), 
+    db: Session = Depends(database.get_db) # MUDANÇA 2: Corrigido de crud.get_db para database.get_db
+):
+    # MUDANÇA 3: A importação do crud é feita DENTRO da função para quebrar o ciclo
+    from . import crud
+
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Não foi possível validar as credenciais",
