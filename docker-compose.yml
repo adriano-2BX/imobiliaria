@@ -2,11 +2,14 @@ version: '3.8'
 
 services:
   api:
+    # O build agora usa o Dockerfile corrigido
     build: .
     ports:
       - "8000:8000"
     env_file:
       - ./.env
+    # Monta todo o projeto local na pasta /code do container
     volumes:
-      - ./app:/app
+      - .:/code
+    # O comando agora é executado a partir de /code, onde ele encontra a pasta 'app'
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
