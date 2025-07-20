@@ -1,23 +1,21 @@
 # 1. Usar uma imagem oficial do Python como base
 FROM python:3.11-slim
 
-# 2. Definir o diretório de trabalho dentro do container
-WORKDIR /app
+# 2. Definir o diretório de trabalho para /code
+WORKDIR /code
 
-# 3. Instalar dependências do sistema, se necessário (bom para mysqlclient)
-# RUN apt-get update && apt-get install -y default-libmysqlclient-dev gcc && rm -rf /var/lib/apt/lists/*
-
-# 4. Copiar o arquivo de dependências para o container
+# 3. Copiar o arquivo de dependências para o novo diretório
 COPY requirements.txt .
 
-# 5. Instalar as dependências do Python
+# 4. Instalar as dependências
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 6. Copiar todo o código da nossa pasta "app" para o container
-COPY ./app /app
+# 5. Copiar todo o nosso código para o diretório /code
+# Agora a estrutura dentro do container será /code/app/...
+COPY . .
 
-# 7. Expor a porta que a nossa aplicação vai usar dentro do container
+# 6. Expor a porta que a nossa aplicação vai usar
 EXPOSE 8000
 
-# 8. Definir o comando para iniciar a API quando o container rodar
+# 7. Definir o comando para iniciar a API (continua o mesmo)
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
