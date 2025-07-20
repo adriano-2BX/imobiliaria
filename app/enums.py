@@ -7,6 +7,7 @@ class ImobiliariaStatus(str, enum.Enum):
     pendente = "pendente"
 
 class UsuarioPermissao(str, enum.Enum):
+    superadmin = "superadmin"  # <-- ADICIONADO
     admin = "admin"
     usuario = "usuario"
 
