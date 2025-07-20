@@ -1,37 +1,15 @@
 # backend/app/models.py
-from sqlalchemy import (Column, Integer, String, Enum, TIMESTAMP, text, ForeignKey,
+from sqlalchemy import (Column, Integer, String, TIMESTAMP, text, ForeignKey,
                         DECIMAL, Date, JSON, Text)
 from sqlalchemy.orm import relationship
 from .database import Base
-import enum
+# O import do 'enum' não é mais necessário aqui para os modelos de tabela
 
-# --- Enums para status e tipos ---
-class ImobiliariaStatus(str, enum.Enum):
-    ativo = "ativo"
-    inativo = "inativo"
-    pendente = "pendente"
-
-class UsuarioPermissao(str, enum.Enum):
-    admin = "admin"
-    usuario = "usuario"
-
-# ENUM ATUALIZADO
-class EmpreendimentoStatus(str, enum.Enum):
-    lancamento = "lancamento"
-    em_obras = "em_obras"
-    pronto_para_morar = "pronto_para_morar"
-    entregue = "entregue"
-
-# ENUM ATUALIZADO
-class ArquivoTipo(str, enum.Enum):
-    imagem_fachada = "imagem_fachada"
-    imagem_interna = "imagem_interna"
-    planta = "planta"
-    video = "video"
-    tour_360 = "tour_360"
+# Os Enums do Python ainda são usados nos Schemas para validação de entrada, então os mantemos.
+from .schemas import ImobiliariaStatus, UsuarioPermissao, EmpreendimentoStatus, ArquivoTipo
 
 
-# --- Modelos das Tabelas ---
+# --- Modelos das Tabelas (Atualizados para usar String) ---
 
 class Imobiliaria(Base):
     __tablename__ = "imobiliarias"
@@ -39,7 +17,7 @@ class Imobiliaria(Base):
     imob_nome = Column(String(255), nullable=False)
     imob_creci_juridico = Column(String(50), unique=True, index=True)
     imob_logo_url = Column(String(255), nullable=True)
-    status = Column(Enum(ImobiliariaStatus), default=ImobiliariaStatus.pendente)
+    status = Column(String(50), default=ImobiliariaStatus.pendente) # MUDANÇA: Enum -> String
     created_at = Column(TIMESTAMP, server_default=text('CURRENT_TIMESTAMP'))
     updated_at = Column(TIMESTAMP, server_default=text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'))
 
@@ -55,7 +33,7 @@ class Usuario(Base):
     usu_senha = Column(String(255), nullable=False)
     usu_apelido = Column(String(100), nullable=True)
     usu_creci = Column(String(50), unique=True, nullable=True)
-    permissao = Column(Enum(UsuarioPermissao), default=UsuarioPermissao.usuario)
+    permissao = Column(String(50), default=UsuarioPermissao.usuario) # MUDANÇA: Enum -> String
     created_at = Column(TIMESTAMP, server_default=text('CURRENT_TIMESTAMP'))
     updated_at = Column(TIMESTAMP, server_default=text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'))
 
@@ -67,7 +45,7 @@ class Empreendimento(Base):
     imobiliaria_id = Column(Integer, ForeignKey("imobiliarias.id"), nullable=False)
     emp_nome = Column(String(255), nullable=False)
     emp_apelido = Column(String(255), nullable=True)
-    emp_status = Column(Enum(EmpreendimentoStatus), nullable=False) # Usa o Enum atualizado
+    emp_status = Column(String(50), nullable=False) # MUDANÇA: Enum -> String
     emp_endereco = Column(Text, nullable=True)
     regiao = Column(String(255), nullable=True)
     emp_descricao = Column(Text, nullable=True)
@@ -99,7 +77,7 @@ class Arquivo(Base):
     __tablename__ = "arquivos"
     id = Column(Integer, primary_key=True, index=True)
     empreendimento_id = Column(Integer, ForeignKey("empreendimentos.id"), nullable=False)
-    tipo = Column(Enum(ArquivoTipo), nullable=False) # Usa o Enum atualizado
+    tipo = Column(String(50), nullable=False) # MUDANÇA: Enum -> String
     link_arquivo = Column(String(255), nullable=False)
     ordem = Column(Integer, default=0)
     created_at = Column(TIMESTAMP, server_default=text('CURRENT_TIMESTAMP'))
