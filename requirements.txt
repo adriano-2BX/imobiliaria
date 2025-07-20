@@ -5,3 +5,4 @@ PyMySQL
 pydantic-settings
 passlib[bcrypt]
 cryptography
+python-jose[cryptography]
