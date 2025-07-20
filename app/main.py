@@ -1,21 +1,16 @@
-from fastapi import FastAPI
-from .database import engine
-from . import models
-from .routers import imobiliarias
+# --- INÍCIO DA CONFIGURAÇÃO DO CORS ---
+# Lista de origens que podem fazer requisições para a nossa API
+origins = [
+    "http://localhost:3000",  # <<< ADICIONE ESTA LINHA - Essencial para o desenvolvimento local do front-end
+    "https://automacoes-api.hs7hhd.easypanel.host", # É uma boa prática permitir a própria origem da API
+    # "https://www.seu-frontend-em-producao.com.br", # QUANDO TIVER, adicione aqui o domínio de produção do seu front-end
+]
 
-# Esta linha cria a tabela no banco de dados se ela não existir
-# Ao conectar com um banco de dados externo, certifique-se de que o usuário tem permissão para CREATE TABLE
-models.Base.metadata.create_all(bind=engine)
-
-app = FastAPI(
-    title="Catálogo de Empreendimentos API",
-    description="API para o sistema de catálogo de empreendimentos imobiliários.",
-    version="0.1.0"
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
-
-# Inclui os routers
-app.include_router(imobiliarias.router)
-
-@app.get("/")
-def read_root():
-    return {"Status": "API Online"}
+# --- FIM DA CONFIGURAÇÃO DO CORS ---
