@@ -14,17 +14,22 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Configuração do CORS (útil para o futuro)
-origins = [
-    "http://localhost:3000",
-]
+# --- INÍCIO DA CONFIGURAÇÃO DO CORS ---
+#
+# Para permitir qualquer integração, definimos a lista de origens como ["*"]
+# O asterisco (*) é um curinga que significa "permitir qualquer origem".
+#
+origins = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"], # Permite todos os métodos (GET, POST, PUT, DELETE, etc.)
+    allow_headers=["*"], # Permite todos os cabeçalhos
 )
+# --- FIM DA CONFIGURAÇÃO DO CORS ---
+
 
 # Inclui todos os routers com um prefixo global /api
 app.include_router(auth.router, prefix="/api")
