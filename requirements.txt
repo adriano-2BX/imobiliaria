@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+PyMySQL
+pydantic-settings
+passlib[bcrypt]
