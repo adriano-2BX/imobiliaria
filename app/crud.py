@@ -2,7 +2,7 @@
 from sqlalchemy.orm import Session
 from . import models, schemas, security
 
-# --- CRUD para Imobiliaria ---
+# --- CRUD para Imobiliaria (sem alterações) ---
 def get_imobiliaria(db: Session, imobiliaria_id: int):
     return db.query(models.Imobiliaria).filter(models.Imobiliaria.id == imobiliaria_id).first()
 
@@ -35,7 +35,7 @@ def delete_imobiliaria(db: Session, imobiliaria_id: int):
     db.commit()
     return db_imobiliaria
 
-# --- CRUD para Usuario ---
+# --- CRUD para Usuario (Atualizado) ---
 def get_usuario(db: Session, usuario_id: int):
     return db.query(models.Usuario).filter(models.Usuario.id == usuario_id).first()
 
@@ -51,6 +51,7 @@ def create_usuario(db: Session, usuario: schemas.UsuarioCreate):
         usu_nome=usuario.usu_nome,
         usu_email=usuario.usu_email,
         usu_senha=hashed_password,
+        usu_apelido=usuario.usu_apelido, # NOVO CAMPO
         usu_creci=usuario.usu_creci,
         permissao=usuario.permissao,
         imobiliaria_id=usuario.imobiliaria_id
@@ -60,7 +61,7 @@ def create_usuario(db: Session, usuario: schemas.UsuarioCreate):
     db.refresh(db_usuario)
     return db_usuario
 
-# --- CRUD para Empreendimento ---
+# --- CRUD para Empreendimento (Atualizado) ---
 def get_empreendimento(db: Session, empreendimento_id: int):
     return db.query(models.Empreendimento).filter(models.Empreendimento.id == empreendimento_id).first()
 
@@ -74,6 +75,17 @@ def create_empreendimento(db: Session, empreendimento: schemas.EmpreendimentoCre
     db.refresh(db_empreendimento)
     return db_empreendimento
 
+def update_empreendimento(db: Session, empreendimento_id: int, empreendimento_update: schemas.EmpreendimentoUpdate):
+    db_empreendimento = get_empreendimento(db, empreendimento_id)
+    if not db_empreendimento:
+        return None
+    update_data = empreendimento_update.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(db_empreendimento, key, value)
+    db.commit()
+    db.refresh(db_empreendimento)
+    return db_empreendimento
+
 def delete_empreendimento(db: Session, empreendimento_id: int):
     db_empreendimento = get_empreendimento(db, empreendimento_id)
     if not db_empreendimento:
@@ -82,9 +94,9 @@ def delete_empreendimento(db: Session, empreendimento_id: int):
     db.commit()
     return db_empreendimento
 
-# --- CRUD para Arquivo ---
-def create_arquivo(db: Session, arquivo: schemas.ArquivoCreate, empreendimento_id: int):
-    db_arquivo = models.Arquivo(**arquivo.model_dump(), empreendimento_id=empreendimento_id)
+# --- CRUD para Arquivo (Atualizado) ---
+def create_arquivo(db: Session, arquivo: schemas.ArquivoCreate):
+    db_arquivo = models.Arquivo(**arquivo.model_dump())
     db.add(db_arquivo)
     db.commit()
     db.refresh(db_arquivo)
