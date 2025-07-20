@@ -2,9 +2,10 @@
 from pydantic import BaseModel, ConfigDict, EmailStr
 from typing import Optional, List
 from datetime import datetime, date
-from .models import ImobiliariaStatus, UsuarioPermissao, EmpreendimentoStatus, ArquivoTipo
+# MUDANÇA: Importando do novo arquivo enums.py
+from .enums import ImobiliariaStatus, UsuarioPermissao, EmpreendimentoStatus, ArquivoTipo
 
-# --- Schemas de Token (sem alterações) ---
+# --- Schemas de Token ---
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -12,7 +13,7 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     email: Optional[str] = None
 
-# --- Schemas de Imobiliaria (sem alterações) ---
+# --- Schemas de Imobiliaria ---
 class ImobiliariaBase(BaseModel):
     imob_nome: str
     imob_creci_juridico: Optional[str] = None
@@ -34,11 +35,11 @@ class Imobiliaria(ImobiliariaBase):
     updated_at: datetime
     model_config = ConfigDict(from_attributes=True)
 
-# --- Schemas de Usuario (Atualizados) ---
+# --- Schemas de Usuario ---
 class UsuarioBase(BaseModel):
     usu_nome: str
     usu_email: EmailStr
-    usu_apelido: Optional[str] = None # NOVO CAMPO
+    usu_apelido: Optional[str] = None
     usu_creci: Optional[str] = None
     permissao: UsuarioPermissao = UsuarioPermissao.usuario
 
@@ -53,11 +54,11 @@ class Usuario(UsuarioBase):
     updated_at: datetime
     model_config = ConfigDict(from_attributes=True)
 
-# --- Schemas de Arquivo (Atualizados) ---
+# --- Schemas de Arquivo ---
 class ArquivoBase(BaseModel):
     tipo: ArquivoTipo
     link_arquivo: str
-    ordem: Optional[int] = 0 # NOVO CAMPO
+    ordem: Optional[int] = 0
 
 class ArquivoCreate(ArquivoBase):
     empreendimento_id: int
@@ -68,7 +69,7 @@ class Arquivo(ArquivoBase):
     created_at: datetime
     model_config = ConfigDict(from_attributes=True)
 
-# --- Schemas de Empreendimento (Atualizados) ---
+# --- Schemas de Empreendimento ---
 class EmpreendimentoBase(BaseModel):
     emp_nome: str
     emp_apelido: Optional[str] = None
@@ -99,7 +100,6 @@ class EmpreendimentoCreate(EmpreendimentoBase):
     pass
 
 class EmpreendimentoUpdate(EmpreendimentoBase):
-    # Para o update, todos os campos são opcionais
     emp_nome: Optional[str] = None
     emp_status: Optional[EmpreendimentoStatus] = None
 
